@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Joy</title>
+		<meta charset="utf-8">
+		<meta name="description" content="Boitier d'arcade virtuel pour le projet
+			borne d'arcade">
+		<meta name="author" content="Emmanuel Ruaud">
+		<link rel="stylesheet" href="./static/style/arcade.css" type="text/css">
+		<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" crossorigin="anonymous"></script>
+		<script src="./static/js/arcade.js" type="module"></script>
+	</head>
+	<body>
+		<!-- Example of two JoyStick integrated in the page structure -->
+		<div class="arcade-stick">
+			<div class="sidepanel">
+				<div id="led-display">
+				</div>
+				<div id="stick"></div>
+			</div>
+			<div>
+				<div class="btn-panel">
+					<div class="btn" style="left:20px;">
+						<div class="btn-wrap white">
+							<div class="btn-body white" data-action="start"><span>SELECT</span></div>
+						</div>
+					</div>
+					<div class="btn" style="left:140px;">
+						<div class="btn-wrap white">
+							<div class="btn-body white" data-action="start"><span>START</span></div>
+						</div>
+					</div>
+					<div class="btn" style="left:180px;top:120px;">
+						<div class="btn-wrap green">
+							<div class="btn-body green" data-action="green">
+							</div>
+						</div>
+					</div>
+					<div class="btn" style="left:290px;top:35px;">
+						<div class="btn-wrap blue">
+							<div class="btn-body blue" data-action="blue">
+							</div>
+						</div>
+					</div>
+					<div class="btn" style="left:280px;top:210px;">
+						<div class="btn-wrap yellow">
+							<div class="btn-body yellow" data-action="yellow">
+							</div>
+						</div>
+					</div>
+					<div class="btn" style="left:395px;top:125px;">
+						<div class="btn-wrap red">
+							<div class="btn-body red" data-action="red">
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</body>
+</html>
