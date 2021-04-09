@@ -21,10 +21,12 @@ function displayArcadeText(text) {
     led.scrollTop = led.scrollHeight - led.clientHeight;
 }
 
+// Emitting Command events
 document.addEventListener("command", (ev) => {
   socket.emit("command", ev.detail.command);
 })
 
+// Updating Led Display
 setInterval(() => {
     const xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
