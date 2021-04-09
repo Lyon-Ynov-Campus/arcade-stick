@@ -47,7 +47,7 @@ export class JoyStick {
   listenStick() {
     setInterval(() => {
       this.sendCommand({ stick: this.direction });
-    }, 1000);
+    }, 200);
   }
 
   registerEvents() {
