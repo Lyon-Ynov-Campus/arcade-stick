@@ -85,6 +85,11 @@ body {
   width: 80px;
 }
 
+.arcade-stick .btn .btn-wrap .btn-body:active {
+    box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.8);
+    filter: saturate(0.7);
+}
+
 .btn-body span {
   color: #f4f4f4;
   font-weight: 600;
