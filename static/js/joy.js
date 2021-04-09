@@ -319,6 +319,7 @@ export class JoyStick {
       },
     });
     document.dispatchEvent(event);
+    console.log(`Sending command ${Object.values(cmd)}`);
   }
 
   /*

@@ -6,7 +6,8 @@ body {
 
 .arcade-stick {
   width: 700px;
-  background-color: blue;
+  background-color: #2f4353;
+  background-image: linear-gradient(315deg, #2f4353 0%, #d2ccc4 74%);
   margin: 30px auto;
   border-radius: 10px;
   padding: 35px;
