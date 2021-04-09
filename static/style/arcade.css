@@ -92,6 +92,7 @@ body {
 }
 
 .btn-body span {
+  user-select:none;
   color: #f4f4f4;
   font-weight: 600;
   text-shadow: 0 0 1px rgba(0, 0, 0, 0.6);
