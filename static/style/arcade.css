@@ -34,6 +34,7 @@ body {
   padding: 4px;
   overflow: hidden;
   color: #1fb426;
+  width: 180px;
 }
 
 .arcade-stick #led-display p {

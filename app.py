@@ -3,6 +3,7 @@ from flask_socketio import SocketIO
 
 app = Flask(__name__)
 socketio = SocketIO(app)
+info = ""
 
 """
 Basic server implementation, nothing to do here but you can make it better
@@ -19,20 +20,26 @@ def static_files(path):
 TODO: Update to retrieve logs from the remote game
 """
 @app.route('/info', methods=['GET'])
-def displayInfo():
-    return "LOG"
-
+def display_info():
+    global info
+    msg = info
+    if info:
+        info = ''
+    return msg
 
 """
 TODO: Update to send commands to the remote game
 """
-@app.route('/commands', methods=['POST'])
-def send_commands():
-    print(request.form)
-    pass
+@socketio.on('command')
+def send_commands(json):
+    global info
+    if 'stick' in json:
+        info = "Stick {}".format(json['stick'])
+    elif 'button' in json:
+        info = "Button {}".format(json['button'])
 
 """
 Starting App
 """
 if __name__ == '__main__':
-    app.run(threaded=True, port=5000)
+    socketio.run(app)

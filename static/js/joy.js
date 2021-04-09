@@ -80,7 +80,7 @@ export class JoyStick {
      * @desc The width of canvas
      * @return Number of pixel width 
      */
-     GetWidth() {
+    GetWidth() {
         return this.canvas.width;
     };
 
@@ -115,18 +115,18 @@ export class JoyStick {
         var result = "";
         const horizontal = this.status.position.x - this.center.x;
         const vertical = this.status.position.y - this.center.y;
-
-        if (vertical >= this.dimensions.VerticalMinus && vertical <= this.dimensions.VerticalPlus) {
+        const limits = this.dimensions.directionLimits;
+        if (vertical > limits.VerticalMinus && vertical < limits.VerticalPlus) {
             result = "C";
         }
-        if (vertical < this.dimensions.VerticalMinus) {
+        if (vertical <= limits.VerticalMinus) {
             result = "N";
         }
-        if (vertical > this.dimensions.VerticalPlus) {
+        if (vertical >= limits.VerticalPlus) {
             result = "S";
         }
 
-        if (horizontal < this.dimensions.HorizontalMinus) {
+        if (horizontal <= limits.HorizontalMinus) {
             if (result === "C") {
                 result = "W";
             }
@@ -134,7 +134,7 @@ export class JoyStick {
                 result += "W";
             }
         }
-        if (horizontal > this.dimensions.HorizontalPlus) {
+        if (horizontal >= limits.HorizontalPlus) {
             if (result === "C") {
                 result = "E";
             }
@@ -144,7 +144,7 @@ export class JoyStick {
         }
         return result;
     };
-    
+
     /**
      * @desc Draw the external circle used as reference position
      */
@@ -208,31 +208,55 @@ export class JoyStick {
 
     }
 
+    sendCommand(cmd) {
+        const event = new CustomEvent("command", {
+            detail: {
+                command: cmd
+            }
+        });
+        document.dispatchEvent(event);
+    }
+
     /*
     ** LISTENERS
     */
-
     onKeyPress(event) {
-        console.log("PRESS", event.key);
         /*
         ** Update for Qwerty keyboard
         */
+        const oldDirection = this.direction;
         switch (event.key) {
-            case "z":
-                this.status.position = { x: this.center.x, y: this.dimensions.directionLimits.VerticalPlus };
+            case "b":
+                this.sendCommand({ button: "green" })
+                return
+            case "h":
+                this.sendCommand({ button: "blue" })
+                return
+            case "n":
+                this.sendCommand({ button: "yellow" })
+                return
+            case "j":
+                this.sendCommand({ button: "red" })
+                return
+            case "d":
+                this.status.position = { x: this.center.x + this.dimensions.directionLimits.HorizontalPlus, y: this.center.y };
                 break;
             case "q":
-                this.status.position = { x: this.dimensions.directionLimits.HorizontalMinus, y: this.center.y };
+                this.status.position = { x: this.center.x + this.dimensions.directionLimits.HorizontalMinus, y: this.center.y };
                 break;
             case "s":
-                this.status.position = { x: this.center.x, y: this.dimensions.directionLimits.VerticalMinus };
+                this.status.position = { x: this.center.x, y: this.center.y + this.dimensions.directionLimits.VerticalMinus };
                 break;
-            case "d":
-                this.status.position = { x: this.dimensions.directionLimits.HorizontalPlus, y: this.center.y };
+            case "z":
+                this.status.position = { x: this.center.x, y: this.center.y + this.dimensions.directionLimits.VerticalPlus };
                 break;
             default:
                 return;
         }
+        if (oldDirection == this.direction) {
+            return;
+        }
+        this.sendCommand({ stick: this.direction })
         // Delete this.canvas
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         // Redraw object
@@ -241,8 +265,10 @@ export class JoyStick {
     }
 
     onKeyRelease(event) {
-        console.log("RELEASE");
         this.status.position = this.center;
+        if (this.direction != "C") {
+            this.sendCommand({ stick: this.direction })
+        }
         // Delete this.canvas
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         // Redraw object
@@ -258,6 +284,7 @@ export class JoyStick {
     }
 
     onTouchMove(event) {
+        const oldDirection = this.direction;
         // Prevent the browser from doing its default thing (scroll, zoom)
         event.preventDefault();
         if (this.status.pressed && event.targetTouches[0].target === this.canvas) {
@@ -272,6 +299,9 @@ export class JoyStick {
                 this.status.position.x -= this.canvas.offsetParent.offsetLeft;
                 this.status.position.y -= this.canvas.offsetParent.offsetTop;
             }
+            if (oldDirection != this.direction) {
+                this.sendCommand({ stick: this.direction })
+            }
             // Delete this.canvas
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             // Redraw object
@@ -282,9 +312,13 @@ export class JoyStick {
 
     onTouchEnd(event) {
         this.status.pressed = false;
+        const oldDirection = this.direction;
         // If required reset position store variable
         if (this.style.autoReturnToCenter) {
             this.status.position = this.center;
+        }
+        if (oldDirection != this.direction) {
+            this.sendCommand({ stick: this.direction })
         }
         // Delete this.canvas
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -303,6 +337,7 @@ export class JoyStick {
 
     onMouseMove(event) {
         if (this.status.pressed) {
+            const oldDirection = this.direction;
             this.status.position = {
                 x: event.pageX,
                 y: event.pageY
@@ -315,6 +350,9 @@ export class JoyStick {
             else {
                 this.status.position.x -= this.canvas.offsetParent.offsetLeft;
                 this.status.position.y -= this.canvas.offsetParent.offsetTop;
+            }
+            if (oldDirection != this.direction) {
+                this.sendCommand({ stick: this.direction })
             }
             // Delete canvas
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
