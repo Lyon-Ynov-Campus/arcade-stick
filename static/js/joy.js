@@ -118,6 +118,7 @@ export class JoyStick {
         this.sendCommand({ button: ev.currentTarget.dataset.action });
       });
       b.addEventListener("touchstart", (ev) => {
+        ev.preventDefault();
         this.sendCommand({ button: ev.currentTarget.dataset.action });
       });
     });
@@ -397,6 +398,7 @@ export class JoyStick {
    */
   onTouchStart(event) {
     this.status.pressed = true;
+    ev.preventDefault();
   }
 
   onTouchMove(event) {
