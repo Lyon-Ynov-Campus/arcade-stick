@@ -3,8 +3,11 @@ This project template is an arcade stick emulator
 
 ## Installation
 - install Python 3.9.4 (virtualenv recommended)
+    - [instructions](https://python.doctor/page-virtualenv-python-environnement-virtuel)
 - install requirements with `pip install -r requirements.txt`
-- launch server with `gunicorn --worker-class eventlet -w 1 app:app`
+- launch server with either:
+    - `gunicorn --worker-class eventlet -w 1 app:app`
+    - `flask run`
 
 ## Deploy on Heroku
 - create the heroku app on heroku.com
