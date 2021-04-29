@@ -362,13 +362,13 @@ export class JoyStick {
       case "s":
         this.status.position = {
           x: this.center.x,
-          y: this.center.y + this.dimensions.directionLimits.VerticalMinus,
+          y: this.center.y + this.dimensions.directionLimits.VerticalPlus,
         };
         break;
       case "z":
         this.status.position = {
           x: this.center.x,
-          y: this.center.y + this.dimensions.directionLimits.VerticalPlus,
+          y: this.center.y + this.dimensions.directionLimits.VerticalMinus,
         };
         break;
       default:

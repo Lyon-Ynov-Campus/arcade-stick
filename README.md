@@ -9,6 +9,12 @@ This project template is an arcade stick emulator
 - launch server with either:
     - `gunicorn --worker-class eventlet -w 1 app:app`
     - `flask run`
+    - `./start.sh`
+
+## Run on Docker
+You can also run arcade stick on Docker
+- `docker build . -t arcade-stick`
+- `docker run -p 8000:8000 arcade-stick`
 
 ## Deploy on Heroku
 - create the heroku app on heroku.com
