@@ -319,7 +319,7 @@ export class JoyStick {
       },
     });
     document.dispatchEvent(event);
-    console.log(`Sending command ${Object.values(cmd)}`);
+    // console.log(`Sending command ${Object.values(cmd)}`);
   }
 
   /*
@@ -399,7 +399,7 @@ export class JoyStick {
    */
   onTouchStart(event) {
     this.status.pressed = true;
-    ev.preventDefault();
+    event.preventDefault();
   }
 
   onTouchMove(event) {
@@ -435,8 +435,8 @@ export class JoyStick {
     // Delete this.canvas
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     // Redraw object
-    drawExternal();
-    drawInternal();
+    this.drawExternal();
+    this.drawInternal();
     //this.canvas.unbind('touchmove');
   }
 
