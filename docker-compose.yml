@@ -1,0 +1,10 @@
+version: '3'
+services:
+    arcade:
+      build: .
+      ports:
+        - "8000:8000"
+      volumes:
+        - ./:/app
+      environment:
+        GUNICORN_CMD_ARGS: "--reload --error-logfile gunicorn.error.log --access-logfile gunicorn.log --log-level=info"

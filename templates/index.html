@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Joy</title>
+		<meta charset="utf-8">
+		<meta name="description" content="Boitier d'arcade virtuel pour le projet
+			borne d'arcade">
+		<meta name="author" content="Emmanuel Ruaud">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='style/arcade.css') }}">
+		<script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
+		<script src="{{ url_for('static', filename='js/arcade.js') }}" type="module"></script>
+	</head>
+	<body>
+		<div class="arcade-stick">
+			<div class="sidepanel">
+				<div id="led-display">
+				</div>
+				<div id="stick"></div>
+			</div>
+			<div>
+				<div class="btn-panel">
+					<div class="btn" style="left:20px;">
+						<div class="btn-wrap white">
+							<div class="btn-body white" data-action="select"><span>SELECT</span></div>
+						</div>
+					</div>
+					<div class="btn" style="left:140px;">
+						<div class="btn-wrap white">
+							<div class="btn-body white" data-action="start"><span>START</span></div>
+						</div>
+					</div>
+					<div class="btn" style="left:180px;top:120px;">
+						<div class="btn-wrap green">
+							<div class="btn-body green" data-action="green"><span>B</span></div>
+						</div>
+					</div>
+					<div class="btn" style="left:290px;top:35px;">
+						<div class="btn-wrap blue">
+							<div class="btn-body blue" data-action="blue"><span>H</span></div>
+						</div>
+					</div>
+					<div class="btn" style="left:280px;top:210px;">
+						<div class="btn-wrap yellow">
+							<div class="btn-body yellow" data-action="yellow"><span>N</span></div>
+						</div>
+					</div>
+					<div class="btn" style="left:395px;top:125px;">
+						<div class="btn-wrap red">
+							<div class="btn-body red" data-action="red"><span>J</span></div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</body>
+</html>
