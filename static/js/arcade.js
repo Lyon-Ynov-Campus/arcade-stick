@@ -1,9 +1,10 @@
 import { JoyStick } from "./joy.js"
 import { uniqueId } from "./utils.js"
+import { CONFIG } from "./config.js"
 
 var socket = io();
-socket.on('connect', function() {
-    socket.emit('command', {player: playerID, event: "connect"});
+socket.on('connect', function () {
+  socket.emit('command', { player: playerID, event: "connect" });
 });
 
 const stick = new JoyStick('stick');
@@ -26,17 +27,17 @@ window.onload = () => {
 }
 
 function displayArcadeText(text) {
-    const led = document.getElementById("led-display");
+  const led = document.getElementById("led-display");
 
-    // Clear if full
-    if (led.childNodes.length == 3) {
-        led.removeChild(led.childNodes[0]);
-    }
+  // Clear if full
+  if (led.childNodes.length == 3) {
+    led.removeChild(led.childNodes[0]);
+  }
 
-    const p = document.createElement("p");
-    p.innerHTML = text;
-    led.appendChild(p);
-    led.scrollTop = led.scrollHeight - led.clientHeight;
+  const p = document.createElement("p");
+  p.innerHTML = text;
+  led.appendChild(p);
+  led.scrollTop = led.scrollHeight - led.clientHeight;
 }
 
 // Emitting Command events
@@ -50,15 +51,15 @@ document.addEventListener("command", (ev) => {
 
 // Updating Led Display
 setInterval(() => {
-    const xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-          if (this.responseText == "") {
-            return;
-          }
-          displayArcadeText(this.responseText);
-        }
-      };
-    xhttp.open("GET", "/info", true);
-    xhttp.send();
-}, 200);
+  const xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+      if (this.responseText == "") {
+        return;
+      }
+      displayArcadeText(this.responseText);
+    }
+  };
+  xhttp.open("GET", "/info", true);
+  xhttp.send();
+}, CONFIG.display_refresh_ms);

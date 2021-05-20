@@ -1,7 +1,7 @@
+import { CONFIG } from "./config.js"
+
 export class JoyStick {
   constructor(container, parameters = {}) {
-    this.cooldown = 50;
-
     this.style = {
       title: "joystick",
       internalFillColor: "#bf0232",
@@ -37,8 +37,9 @@ export class JoyStick {
       last: Date.now(),
     };
     this.registerEvents();
-    this.listenStick();
-
+    if (CONFIG.joystick_mode === "UPDATE") {
+      this.listenStick();
+    }
     // Draw the object
     this.drawExternal();
     this.drawInternal();
@@ -47,7 +48,7 @@ export class JoyStick {
   listenStick() {
     setInterval(() => {
       this.sendCommand({ stick: this.direction });
-    }, 200);
+    }, CONFIG.joystick_update_ms);
   }
 
   registerEvents() {
@@ -115,11 +116,14 @@ export class JoyStick {
     // Listening to buttons
     document.querySelectorAll(".btn-body").forEach((b) => {
       b.addEventListener("click", (ev) => {
-        this.sendCommand({ button: ev.currentTarget.dataset.action });
+        this.sendCommand({ button: ev.currentTarget.dataset.action, event: "down" });
+        if (CONFIG.bindings.button_keydown_event) {
+          this.sendCommand({ button: ev.currentTarget.dataset.action, event: "up" });
+        }
       });
       b.addEventListener("touchstart", (ev) => {
         ev.preventDefault();
-        this.sendCommand({ button: ev.currentTarget.dataset.action });
+        this.sendCommand({ button: ev.currentTarget.dataset.action, event: "up" });
       });
     });
   }
@@ -330,50 +334,47 @@ export class JoyStick {
      ** Update for Qwerty keyboard
      */
     // Prevent key repeat
-    if (Date.now() - this.status.last < this.cooldown) {
+    if (Date.now() - this.status.last < CONFIG.button_repeat_limit) {
       return;
     }
+    const button = Object.keys(CONFIG.bindings).find((k) => CONFIG.bindings[k] === event.key);
     this.status.last = Date.now();
-    switch (event.key) {
-      case "b":
-        this.sendCommand({ button: "green" });
-        return;
-      case "h":
-        this.sendCommand({ button: "blue" });
-        return;
-      case "n":
-        this.sendCommand({ button: "yellow" });
-        return;
-      case "j":
-        this.sendCommand({ button: "red" });
-        return;
-      case "d":
-        this.status.position = {
-          x: this.center.x + this.dimensions.directionLimits.HorizontalPlus,
-          y: this.center.y,
-        };
-        break;
-      case "q":
-        this.status.position = {
-          x: this.center.x + this.dimensions.directionLimits.HorizontalMinus,
-          y: this.center.y,
-        };
-        break;
-      case "s":
-        this.status.position = {
-          x: this.center.x,
-          y: this.center.y + this.dimensions.directionLimits.VerticalPlus,
-        };
-        break;
-      case "z":
-        this.status.position = {
-          x: this.center.x,
-          y: this.center.y + this.dimensions.directionLimits.VerticalMinus,
-        };
-        break;
-      default:
-        return;
+    if (["green", "blue", "yellow", "red"].includes(button)) {
+      this.sendCommand({ button: button });
+      // Display button pressed
+      const element = document.querySelector(`.btn-body.${button}`);
+      element.classList.add("activate");
+    } else {
+      switch (button) {
+        case CONFIG.bindings.stick_right:
+          this.status.position = {
+            x: this.center.x + this.dimensions.directionLimits.HorizontalPlus,
+            y: this.center.y,
+          };
+          break;
+        case CONFIG.bindings.stick_left:
+          this.status.position = {
+            x: this.center.x + this.dimensions.directionLimits.HorizontalMinus,
+            y: this.center.y,
+          };
+          break;
+        case CONFIG.bindings.stick_down:
+          this.status.position = {
+            x: this.center.x,
+            y: this.center.y + this.dimensions.directionLimits.VerticalPlus,
+          };
+          break;
+        case CONFIG.bindings.stick_up:
+          this.status.position = {
+            x: this.center.x,
+            y: this.center.y + this.dimensions.directionLimits.VerticalMinus,
+          };
+          break;
+        default:
+          return;
+      }
     }
+
     this.sendCommand({ stick: this.direction });
     // Delete this.canvas
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -383,6 +384,16 @@ export class JoyStick {
   }
 
   onKeyRelease(event) {
+    const button = Object.keys(CONFIG.bindings).find((k) => CONFIG.bindings[k] === event.key);
+    if (["green", "blue", "yellow", "red"].includes(button)) {
+      const element = document.querySelector(`.btn-body.${button}`);
+      element.classList.remove("activate");
+      if (CONFIG.bindings.button_keydown_event) {
+        this.sendCommand({ button: button, event: "up" });
+      }
+      return;
+    }
+
     this.status.position = this.center;
     if (this.direction != "C") {
       this.sendCommand({ stick: this.direction });
@@ -405,6 +416,10 @@ export class JoyStick {
   onTouchMove(event) {
     // Prevent the browser from doing its default thing (scroll, zoom)
     event.preventDefault();
+
+    // Save direction
+    const old_direction = this.direction;
+
     if (this.status.pressed && event.targetTouches[0].target === this.canvas) {
       this.status.position.x = event.targetTouches[0].pageX;
       this.status.position.y = event.targetTouches[0].pageY;
@@ -416,7 +431,9 @@ export class JoyStick {
         this.status.position.x -= this.canvas.offsetParent.offsetLeft;
         this.status.position.y -= this.canvas.offsetParent.offsetTop;
       }
-      this.sendCommand({ stick: this.direction });
+      if (this.direction !== old_direction) {
+        this.sendCommand({ stick: this.direction });
+      }
       // Delete this.canvas
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
       // Redraw object
@@ -430,8 +447,8 @@ export class JoyStick {
     // If required reset position store variable
     if (this.style.autoReturnToCenter) {
       this.status.position = this.center;
+      this.sendCommand({ stick: "C" });
     }
-    this.sendCommand({ stick: this.direction });
     // Delete this.canvas
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     // Redraw object
@@ -448,25 +465,32 @@ export class JoyStick {
   }
 
   onMouseMove(event) {
-    if (this.status.pressed) {
-      this.status.position = {
-        x: event.pageX,
-        y: event.pageY,
-      };
-      // Manage offset
-      if (this.canvas.offsetParent.tagName.toUpperCase() === "BODY") {
-        this.status.position.x -= this.canvas.offsetLeft;
-        this.status.position.y -= this.canvas.offsetTop;
-      } else {
-        this.status.position.x -= this.canvas.offsetParent.offsetLeft;
-        this.status.position.y -= this.canvas.offsetParent.offsetTop;
-      }
+    if (!this.status.pressed) {
+      return;
+    }
+    // Save direction
+    const old_direction = this.direction;
+
+    this.status.position = {
+      x: event.pageX,
+      y: event.pageY,
+    };
+    // Manage offset
+    if (this.canvas.offsetParent.tagName.toUpperCase() === "BODY") {
+      this.status.position.x -= this.canvas.offsetLeft;
+      this.status.position.y -= this.canvas.offsetTop;
+    } else {
+      this.status.position.x -= this.canvas.offsetParent.offsetLeft;
+      this.status.position.y -= this.canvas.offsetParent.offsetTop;
+    }
+    // Delete canvas
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    // Redraw object
+    this.drawExternal();
+    this.drawInternal();
+
+    if (this.direction !== old_direction) {
       this.sendCommand({ stick: this.direction });
-      // Delete canvas
-      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      // Redraw object
-      this.drawExternal();
-      this.drawInternal();
     }
   }
 
@@ -475,6 +499,7 @@ export class JoyStick {
     // If required reset position store variable
     if (this.style.autoReturnToCenter) {
       this.status.position = this.center;
+      this.sendCommand({ stick: "C" })
     }
     // Delete canvas
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);

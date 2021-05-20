@@ -1,6 +1,15 @@
 # Arcade Stick
 This project template is an arcade stick emulator
 
+## Configuration
+You can edit the `static/js/config.js` file to choose the behavior of the jostick.
+- `display_update_ms` will change the update time of the LCD Display
+- `joystick_mode` will change between regular update of the joystick or event based updates where commands are sent when the joystick is moved
+- `joystick_update_ms` will change the update time of the Joystick
+- `button_repeat_limit` limit of key event sent
+- `button_keydown_event` send event: up event when buttons are released
+- `bindings` key bindings to control the arcade board
+
 ## Installation
 - Gunicorn only runs on UNIX, therefore windows user will use WSL2, [setup instructions](https://docs.microsoft.com/fr-fr/windows/wsl/install-win10)
 - install Python 3.9.4 (virtualenv recommended)
