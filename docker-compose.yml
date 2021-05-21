@@ -5,6 +5,8 @@ services:
       ports:
         - "8000:8000"
       volumes:
-        - ./:/app
+        - .:/app
       environment:
-        GUNICORN_CMD_ARGS: "--reload --error-logfile gunicorn.error.log --access-logfile gunicorn.log --log-level=info"
+        GUNICORN_CMD_ARGS: "--error-logfile gunicorn.error.log --access-logfile gunicorn.log --log-level=info --reload"
+      working_dir: "/app"
+      command: "gunicorn --worker-class eventlet -w 1 app:app -b 0.0.0.0:8000"

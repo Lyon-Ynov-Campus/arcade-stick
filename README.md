@@ -22,12 +22,8 @@ You can edit the `static/js/config.js` file to choose the behavior of the jostic
 
 ## Run on Docker
 You can also run arcade stick on Docker
-- `docker build . -t arcade-stick -f Dockerfile`
-- `docker run -p 8000:8000 arcade-stick`
-
-After editing the app you can rebuild the image and run again to see the changes
-
-Alternatively you can use docker-compose by typing `docker-compose up` and everything should be smooth and updated as you change the `main.py` file.
+- `docker-compose up`
+The folder will be mounted in docker compose so the server will relaunch on edit.
 
 ## Deploy on Heroku
 - create the heroku app on heroku.com
